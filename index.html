@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حاسبة المعدل والتخصيص |انارة حائل</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fb;
+      margin: 0; padding: 20px;
+      direction: rtl;
+      color: #1a3e8c;
+    }
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 25px;
+    }
+    .container {
+      max-width: 720px;
+      margin: auto;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgb(26 62 140 / 0.15);
+    }
+    .section-title {
+      font-weight: 700;
+      font-size: 22px;
+      border-bottom: 3px solid #1a3e8c;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .row label {
+      min-width: 180px;
+      font-weight: 600;
+    }
+    .row span, .row input, .row select {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 17px;
+      border: 1.5px solid #1a3e8c;
+      border-radius: 7px;
+      background: #e9f0ff;
+      text-align: center;
+    }
+    .row input, .row select {
+      background: white;
+    }
+    .row input:focus, .row select:focus {
+      outline: none;
+      border-color: #3a65d7;
+      box-shadow: 0 0 10px #adc4ff;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px 0;
+      background-color: #1a3e8c;
+      border: none;
+      color: white;
+      font-weight: 800;
+      font-size: 19px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:hover {
+      background-color: #13418f;
+      box-shadow: 0 0 18px #7189ff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 17px;
+      box-shadow: 0 8px 20px rgb(26 62 140 / 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1.5px solid #dbe4ff;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #1a3e8c;
+      color: white;
+      font-weight: 700;
+    }
+    tr:nth-child(even) {
+      background-color: #f0f4ff;
+    }
+    .grade-cell {
+      font-weight: 700;
+      color: #1a3e8c;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+      color: #1a3e8c;
+    }
+    footer a {
+      color: #13418f;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    .ltr-num {
+      direction: ltr;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      letter-spacing: 0.05em;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .row label {
+        min-width: auto;
+      }
+    }
+    .note {
+      margin-top: 10px;
+      background: #eef4ff;
+      border-right: 4px solid #1a3e8c;
+      padding: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<h1>حاسبة المعدل والتخصيص |جامعة حائل</h1>
+
+<div class="container">
+
+  <!-- حساب المعدل السابق -->
+  <div class="row">
+    <label for="usePrevious">هل تريد احتساب المعدل السابق؟</label>
+    <input type="checkbox" id="usePrevious" checked onchange="togglePreviousInputs()" style="transform: scale(1.4); margin-left:10px;" />
+  </div>
+  <div class="row" style="margin-bottom:20px; font-size:14px; color:#555;">
+    (إذا اخترت هذا الخيار سيتم احتساب المعدل السابق ضمن المعدل التراكمي)
+  </div>
+
+  <div>
+    <div class="section-title">المعدل السابق</div>
+    <div class="row">
+      <label>عدد الساعات السابقة</label>
+      <input type="number" id="previousHours" class="ltr-num" value="0" min="0" />
+    </div>
+    <div class="row">
+      <label>المعدل التراكمي السابق</label>
+      <input type="number" id="previousGPA" class="ltr-num" value="0" min="0" max="4" step="0.01" />
+    </div>
+    <div class="row">
+      <label>النقاط (دقة 100%)</label>
+      <input type="text" id="previousPoints" class="ltr-num" value="0" readonly />
+    </div>
+  </div>
+
+  <!-- جدول حساب التخصيص -->
+  <div class="section-title">حساب التخصيص</div>
+
+  <div class="row">
+    <label for="trackSelect">اختر المسار</label>
+    <select id="trackSelect" onchange="calculateResults()">
+      <option value="health">المسار الصحي</option>
+      <option value="general">باقي المسارات</option>
+    </select>
+  </div>
+
+  <div class="row" id="weightedScoreRow">
+    <label for="weightedScore">النسبة الموزونة (للمسار الصحي)</label>
+    <input type="number" id="weightedScore" class="ltr-num" min="0" max="25" step="0.01" value="0" onchange="calculateResults()" />
+  </div>
+
+  <div class="note">
+    يتم الفرز لرغبات الطلبة للتخصصات الصحية بناءً على المعادلة التالية:<br>
+    المعدل التراكمي الجديد = المعدل التراكمي × 0.55 + ((النسبة الموزونة ÷ 25) × 0.45)
+  </div>
+
+  <!-- نتائج التراكمي -->
+  <div style="margin-top: 25px;">
+    <div class="section-title">نتائج التراكمي</div>
+    <div class="row">
+      <label>النقاط (دقة 100%)</label>
+      <span id="totalPoints" class="ltr-num">0</span>
+    </div>
+    <div class="row">
+      <label>عدد الساعات</label>
+      <span id="totalHours" class="ltr-num">0</span>
+    </div>
+    <div class="row">
+      <label>المعدل</label>
+      <span id="totalGPA" class="ltr-num">0</span>
+    </div>
+    <div class="row">
+      <label>التقدير</label>
+      <span id="totalGrade" class="grade-cell"></span>
+    </div>
+    <div class="row" id="specializationResultRow">
+      <label>نتيجة التخصيص</label>
+      <span id="totalSpecialization" class="ltr-num">0</span>
+    </div>
+  </div>
+
+  <!-- نتائج الفصل -->
+  <div style="margin-top: 25px;">
+    <div class="section-title">نتائج الفصل</div>
+    <div class="row">
+      <label>النقاط (دقة 100%)</label>
+      <span id="semesterPoints" class="ltr-num">0</span
+      </span>
+    </div>
+    <div class="row">
+      <label>عدد الساعات</label>
+      <span id="semesterHours" class="ltr-num">0</span>
+    </div>
+    <div class="row">
+      <label>المعدل</label>
+      <span id="semesterGPA" class="ltr-num">0</span>
+    </div>
+    <div class="row">
+      <label>التقدير</label>
+      <span id="semesterGrade" class="grade-cell"></span>
+    </div>
+  </div>
+
+  <!-- جدول المقررات -->
+  <table aria-label="جدول المقررات" id="coursesTable">
+    <thead>
+      <tr>
+        <th>اسم المقرر</th>
+        <th>عدد الساعات</th>
+        <th>التقدير</th>
+        <th>عدد النقاط</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody id="coursesBody"></tbody>
+  </table>
+
+  <div style="margin-top: 20px;">
+    <label>اسم المقرر</label>
+    <input type="text" id="courseNameInput" placeholder="أدخل اسم المقرر" />
+    <label>عدد الساعات</label>
+    <input type="number" id="courseHoursInput" class="ltr-num" min="1" placeholder="عدد الساعات" />
+    <label>التقدير</label>
+    <select id="courseGradeInput">
+      <option value="">اختر التقدير</option>
+      <option value="4">A+</option>
+      <option value="3.75">A</option>
+      <option value="3.5">B+</option>
+      <option value="3">B</option>
+      <option value="2.5">C+</option>
+      <option value="2">C</option>
+      <option value="1.5">D+</option>
+      <option value="1">D</option>
+      <option value="0">F</option>
+    </select>
+    <button onclick="addCourse()">إضافة المقرر</button>
+  </div>
+
+</div>
+
+<footer>
+  <p>© 2025 إنارة | حائل</p>
+  <p>
+    <a href="https://t.me/g2h77" target="_blank" rel="noopener noreferrer">حسابي على تيليجرام</a> |
+    <a href="https://t.me/Hail2005" target="_blank" rel="noopener noreferrer">قروب إنارة جامعة حائل</a>
+  </p>
+</footer>
+
+<script>
+let courses = [];
+const gradeLetters = {4:"A+",3.75:"A",3.5:"B+",3:"B",2.5:"C+",2:"C",1.5:"D+",1:"D",0:"F"};
+
+function togglePreviousInputs(){
+  const usePrev = document.getElementById("usePrevious").checked;
+  document.getElementById("previousHours").disabled = !usePrev;
+  document.getElementById("previousGPA").disabled = !usePrev;
+  if(!usePrev) document.getElementById("previousPoints").value="0";
+  calculateResults();
+}
+
+function addCourse(){
+  const name=document.getElementById("courseNameInput").value.trim();
+  const hours=parseFloat(document.getElementById("courseHoursInput").value);
+  const grade=parseFloat(document.getElementById("courseGradeInput").value);
+  if(!name){alert("يرجى إدخال اسم المقرر"); return;}
+  if(isNaN(hours)||hours<=0){alert("يرجى إدخال عدد ساعات صحيح"); return;}
+  if(!(grade in gradeLetters)){alert("يرجى اختيار التقدير"); return;}
+  courses.push({name,hours,grade});
+  clearInputs();
+  renderCourses();
+  calculateResults();
+}
+
+function clearInputs(){
+  document.getElementById("courseNameInput").value="";
+  document.getElementById("courseHoursInput").value="";
+  document.getElementById("courseGradeInput").value="";
+}
+
+function renderCourses(){
+  const tbody=document.getElementById("coursesBody");
+  tbody.innerHTML="";
+  courses.forEach((c,index)=>{
+    const tr=document.createElement("tr");
+    const gradeLetter=gradeLetters[c.grade]||"";
+    tr.innerHTML=`
+      <td>${c.name}</td>
+      <td class="ltr-num">${c.hours}</td>
+      <td class="grade-cell">${gradeLetter}</td>
+      <td class="ltr-num">${(c.hours*c.grade).toFixed(2)}</td>
+      <td><button onclick="removeCourse(${index})" style="background:none;border:none;color:#d11a2a;font-weight:bold;cursor:pointer;">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function removeCourse(index){
+  courses.splice(index,1);
+  renderCourses();
+  calculateResults();
+}
+
+function getGradeLetterByGPA(gpa){
+  if(gpa>=3.75) return "A+";
+  if(gpa>=3.5) return "A";
+  if(gpa>=3) return "B+";
+  if(gpa>=2.5) return "B";
+  if(gpa>=2) return "C+";
+  if(gpa>=1.5) return "C";
+  if(gpa>=1) return "D+";
+  if(gpa>0) return "D";
+  return "F";
+}
+
+function calculateResults(){
+  const usePrev=document.getElementById("usePrevious").checked;
+  let prevHours=0, prevGPA=0;
+  if(usePrev){prevHours=parseFloat(document.getElementById("previousHours").value)||0; prevGPA=parseFloat(document.getElementById("previousGPA").value)||0;}
+  const prevPoints=prevHours*prevGPA;
+  document.getElementById("previousPoints").value=prevPoints.toFixed(2);
+
+  let semesterPoints=0, semesterHours=0;
+  for(const c of courses){semesterPoints+=c.grade*c.hours; semesterHours+=c.hours;}
+
+  document.getElementById("semesterPoints").innerText=semesterPoints.toFixed(2);
+  document.getElementById("semesterHours").innerText=semesterHours.toFixed(2);
+  const semesterGPA=semesterHours?semesterPoints/semesterHours:0;
+  document.getElementById("semesterGPA").innerText=semesterGPA.toFixed(2);
+  document.getElementById("semesterGrade").innerText=getGradeLetterByGPA(semesterGPA);
+
+  const totalPoints=prevPoints+semesterPoints;
+  const totalHours=prevHours+semesterHours;
+  document.getElementById("totalPoints").innerText=totalPoints.toFixed(2);
+  document.getElementById("totalHours").innerText=totalHours.toFixed(2);
+  const totalGPA=totalHours?totalPoints/totalHours:0;
+  document.getElementById("totalGPA").innerText=totalGPA.toFixed(2);
+  document.getElementById("totalGrade").innerText=getGradeLetterByGPA(totalGPA);
+
+  calculateSpecialization(totalGPA);
+}
+
+function calculateSpecialization(cumulativeGPA){
+  const track=document.getElementById("trackSelect").value;
+  const specRow=document.getElementById("specializationResultRow");
+  let specializationResult=0;
+  if(track==="health"){
+    const weighted=parseFloat(document.getElementById("weightedScore").value)||0;
+    specializationResult=(cumulativeGPA*0.55)+((weighted/25)*0.45);
+  } else {
+    specializationResult=cumulativeGPA;
+  }
+  specRow.style.display="flex";
+  document.getElementById("totalSpecialization").innerText=specializationResult.toFixed(2);
+}
+
+// البداية
+togglePreviousInputs();
+calculateResults();
+</script>
+
+</body>
+</html>
