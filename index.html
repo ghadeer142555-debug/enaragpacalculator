@@ -123,7 +123,6 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       letter-spacing: 0.05em;
     }
-    /* Responsive */
     @media (max-width: 768px) {
       .row {
         flex-direction: column;
@@ -145,11 +144,10 @@
 </head>
 <body>
 
-<h1>حاسبة المعدل والتخصيص |جامعة حائل</h1>
+<h1>حاسبة المعدل والتخصيص |انارة حائل</h1>
 
 <div class="container">
 
-  <!-- حساب المعدل السابق -->
   <div class="row">
     <label for="usePrevious">هل تريد احتساب المعدل السابق؟</label>
     <input type="checkbox" id="usePrevious" checked onchange="togglePreviousInputs()" style="transform: scale(1.4); margin-left:10px;" />
@@ -174,7 +172,6 @@
     </div>
   </div>
 
-  <!-- جدول حساب التخصيص -->
   <div class="section-title">حساب التخصيص</div>
 
   <div class="row">
@@ -195,7 +192,6 @@
     المعدل التراكمي الجديد = المعدل التراكمي × 0.55 + ((النسبة الموزونة ÷ 25) × 0.45)
   </div>
 
-  <!-- نتائج التراكمي -->
   <div style="margin-top: 25px;">
     <div class="section-title">نتائج التراكمي</div>
     <div class="row">
@@ -220,13 +216,11 @@
     </div>
   </div>
 
-  <!-- نتائج الفصل -->
   <div style="margin-top: 25px;">
     <div class="section-title">نتائج الفصل</div>
     <div class="row">
       <label>النقاط (دقة 100%)</label>
-      <span id="semesterPoints" class="ltr-num">0</span
-      </span>
+      <span id="semesterPoints" class="ltr-num">0</span>
     </div>
     <div class="row">
       <label>عدد الساعات</label>
@@ -242,7 +236,6 @@
     </div>
   </div>
 
-  <!-- جدول المقررات -->
   <table aria-label="جدول المقررات" id="coursesTable">
     <thead>
       <tr>
@@ -280,11 +273,10 @@
 </div>
 
 <footer>
-  <p>© 2025 إنارة | حائل</p>
   <p>
-    <a href="https://t.me/g2h77" target="_blank" rel="noopener noreferrer">حسابي على تيليجرام</a> |
-    <a href="https://t.me/Hail2005" target="_blank" rel="noopener noreferrer">قروب إنارة جامعة حائل</a>
+    <a href="https://www.linkedin.com/in/%D8%BA%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B9%D9%86%D8%B2%D9%8A-46a471347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener noreferrer">حسابي على لينكدن</a>
   </p>
+  <p>© 2025 إنارة | حائل</p>
 </footer>
 
 <script>
@@ -328,7 +320,7 @@ function renderCourses(){
       <td>${c.name}</td>
       <td class="ltr-num">${c.hours}</td>
       <td class="grade-cell">${gradeLetter}</td>
-      <td class="ltr-num">${(c.hours*c.grade).toFixed(2)}</td>
+      <td class="ltr-num">${c.hours*c.grade}</td>
       <td><button onclick="removeCourse(${index})" style="background:none;border:none;color:#d11a2a;font-weight:bold;cursor:pointer;">×</button></td>
     `;
     tbody.appendChild(tr);
@@ -358,23 +350,23 @@ function calculateResults(){
   let prevHours=0, prevGPA=0;
   if(usePrev){prevHours=parseFloat(document.getElementById("previousHours").value)||0; prevGPA=parseFloat(document.getElementById("previousGPA").value)||0;}
   const prevPoints=prevHours*prevGPA;
-  document.getElementById("previousPoints").value=prevPoints.toFixed(2);
+  document.getElementById("previousPoints").value=prevPoints;
 
   let semesterPoints=0, semesterHours=0;
   for(const c of courses){semesterPoints+=c.grade*c.hours; semesterHours+=c.hours;}
 
-  document.getElementById("semesterPoints").innerText=semesterPoints.toFixed(2);
-  document.getElementById("semesterHours").innerText=semesterHours.toFixed(2);
+  document.getElementById("semesterPoints").innerText=semesterPoints;
+  document.getElementById("semesterHours").innerText=semesterHours;
   const semesterGPA=semesterHours?semesterPoints/semesterHours:0;
-  document.getElementById("semesterGPA").innerText=semesterGPA.toFixed(2);
+  document.getElementById("semesterGPA").innerText=semesterGPA;
   document.getElementById("semesterGrade").innerText=getGradeLetterByGPA(semesterGPA);
 
   const totalPoints=prevPoints+semesterPoints;
   const totalHours=prevHours+semesterHours;
-  document.getElementById("totalPoints").innerText=totalPoints.toFixed(2);
-  document.getElementById("totalHours").innerText=totalHours.toFixed(2);
+  document.getElementById("totalPoints").innerText=totalPoints;
+  document.getElementById("totalHours").innerText=totalHours;
   const totalGPA=totalHours?totalPoints/totalHours:0;
-  document.getElementById("totalGPA").innerText=totalGPA.toFixed(2);
+  document.getElementById("totalGPA").innerText=totalGPA;
   document.getElementById("totalGrade").innerText=getGradeLetterByGPA(totalGPA);
 
   calculateSpecialization(totalGPA);
@@ -391,7 +383,7 @@ function calculateSpecialization(cumulativeGPA){
     specializationResult=cumulativeGPA;
   }
   specRow.style.display="flex";
-  document.getElementById("totalSpecialization").innerText=specializationResult.toFixed(2);
+  document.getElementById("totalSpecialization").innerText=specializationResult;
 }
 
 // البداية
